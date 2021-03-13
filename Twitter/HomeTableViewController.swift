@@ -17,9 +17,15 @@ class HomeTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadTweets()
         myRefreshControl.addTarget(self, action: #selector(loadTweets), for: .valueChanged)
         tableView.refreshControl = myRefreshControl
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 150
+    }
+ 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.loadTweets()
     }
     
     @objc func loadTweets() {
@@ -32,13 +38,10 @@ class HomeTableViewController: UITableViewController {
             
             self.tweetArray.removeAll()
             for tweet in tweets {
-                
                 self.tweetArray.append(tweet)
             }
-            
             self.tableView.reloadData()
-            self.myRefreshControl.endRefreshing()  
-            
+            self.myRefreshControl.endRefreshing()
         }, failure: { (Error) in
             print("Could not retrieve tweets")
         })
@@ -54,12 +57,9 @@ class HomeTableViewController: UITableViewController {
             
             self.tweetArray.removeAll()
             for tweet in tweets {
-                
                 self.tweetArray.append(tweet)
             }
-            
             self.tableView.reloadData()
-            
         }, failure: { (Error) in
             print("Could not retrieve tweets")
         })
@@ -90,6 +90,10 @@ class HomeTableViewController: UITableViewController {
         if let imageData = data {
             cell.profileImageView.image = UIImage(data: imageData)
         }
+        
+        cell.setFavorited(tweetArray[indexPath.row]["favorited"] as! Bool)
+        cell.setRetweeted(tweetArray[indexPath.row]["retweeted"] as! Bool)
+        cell.tweetId = tweetArray[indexPath.row]["id"] as! Int
         
         return cell
     }
